@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Gallery from "@/components/Gallery";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -14,11 +15,13 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
           <div className="w-full md:w-1/2 aspect-square relative grayscale transition-all duration-700 hover:grayscale-0">
             <div className="absolute inset-0 border-2 border-accent m-4 translate-x-4 translate-y-4 -z-10" />
-            <img 
-              src="https://images.unsplash.com/photo-1493246507139-91e8bef99c02?auto=format&fit=crop&q=80" 
-              alt="Rafał Woźny" 
-              className="w-full h-full object-cover"
-            />
+            <Image 
+            src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80" 
+            alt="Hero Background" 
+            fill
+            priority
+            className="object-cover"
+          />
           </div>
           <div className="w-full md:w-1/2">
             <span className="text-accent uppercase tracking-[0.3em] text-xs font-bold mb-3 block">O mnie</span>

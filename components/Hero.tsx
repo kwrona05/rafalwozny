@@ -2,7 +2,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ShoppingCart } from "lucide-react";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -49,11 +50,17 @@ export default function Hero() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-6"
         >
-          <button className="group relative px-10 py-4 bg-transparent border border-white text-white text-sm font-bold uppercase tracking-widest overflow-hidden transition-all hover:text-black">
+          <a href="#portfolio" className="group relative px-10 py-5 bg-transparent border border-white text-white text-xs font-bold uppercase tracking-[0.2em] overflow-hidden transition-all hover:text-black">
             <span className="relative z-10">Odkryj Portfolio</span>
             <div className="absolute inset-0 bg-white translate-y-full transition-transform duration-300 group-hover:translate-y-0" />
-          </button>
+          </a>
+          <Link href="/shop" className="group relative px-10 py-5 bg-accent border border-accent text-black text-xs font-bold uppercase tracking-[0.2em] overflow-hidden transition-all hover:bg-white hover:border-white">
+            <span className="relative z-10 flex items-center gap-2">
+              Kup Zdjęcie <ShoppingCart className="w-4 h-4" />
+            </span>
+          </Link>
         </motion.div>
       </div>
 

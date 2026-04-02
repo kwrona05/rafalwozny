@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { Inter, Playfair_Display } from "next/font/google";
+import { Metadata } from "next";
+import { StoreProvider } from "@/lib/data-store";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -13,8 +14,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Rafał Woźny | Fotografia Krajobrazowa",
-  description: "Nowoczesne portfolio Rafała Woźnego - fotografia krajobrazowa, górska i podróżnicza.",
+  title: "Rafał Woźny | Photography",
+  description: "Portfolio i Sklep Autorski",
 };
 
 export default function RootLayout({
@@ -23,11 +24,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl">
+    <html lang="pl" className="scroll-smooth">
       <body
-        className={`${inter.variable} ${playfair.variable} font-sans antialiased`}
+        className={`${inter.variable} ${playfair.variable} antialiased bg-black`}
       >
-        {children}
+        <StoreProvider>
+          {children}
+        </StoreProvider>
       </body>
     </html>
   );
