@@ -12,12 +12,16 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 function SuccessContent() {
+  const { clearCart } = useCart();
   const searchParams = useSearchParams();
   const transactionId = searchParams.get("id");
   const [transaction, setTransaction] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Clear cart immediately on landing
+    clearCart();
+
     async function fetchTransaction() {
       if (!transactionId) {
         setLoading(false);

@@ -37,50 +37,33 @@ export default function CheckoutPage() {
     setError(null);
 
     try {
-      // Simulation of different outcomes based on email for testing
-      // np. 'fail@test.com' -> Brak środków
-      let status = "success";
-      let statusMessage = "Płatność zakończona sukcesem";
+      // 1. Call our custom imoje payment API
+      const response = await fetch("/api/payments/imoje", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items,
+          totalPrice,
+          customer: formData,
+          successUrl: `${window.location.origin}/checkout/success`,
+          failureUrl: `${window.location.origin}/checkout/failure`,
+        }),
+      });
 
-      if (formData.email.includes("fail")) {
-        status = "failed";
-        statusMessage = "Brak środków na koncie";
-      } else if (formData.email.includes("error")) {
-        status = "error";
-        statusMessage = "Błąd komunikacji z bankiem";
-      }
+      const result = await response.json();
 
-      // Save transaction to Firestore
-      const transactionData = {
-        customer: formData,
-        items: items.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image
-        })),
-        totalAmount: totalPrice,
-        status: status,
-        statusMessage: statusMessage,
-        createdAt: serverTimestamp(),
-        paymentMethod: "Karta / BLIK"
-      };
-
-      const docRef = await addDoc(collection(db, "transactions"), transactionData);
-
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      if (status === "success") {
-        clearCart();
-        router.push(`/checkout/success?id=${docRef.id}`);
+      if (result.success && result.paymentUrl) {
+        // 2. Redirect to imoje payment page
+        // No clearCart here - we do it on the success page
+        window.location.href = result.paymentUrl;
       } else {
-        setError(statusMessage);
+        setError(result.error || "Wystąpił błąd podczas inicjacji płatności.");
         setIsSubmitting(false);
       }
     } catch (err) {
-      console.error("Error saving transaction:", err);
+      console.error("Payment error:", err);
       setError("Wystąpił błąd podczas przetwarzania transakcji. Spróbuj ponownie.");
       setIsSubmitting(false);
     }
