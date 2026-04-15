@@ -4,28 +4,90 @@ import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-store";
-import { ArrowLeft, CreditCard, Truck, ShieldCheck, ShoppingBag, ArrowRight } from "lucide-react";
+import { ArrowLeft, CreditCard, Truck, ShieldCheck, ShoppingBag, ArrowRight, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { db } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart, isReady } = useCart();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Form states
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    address: "",
+    zipCode: "",
+    city: ""
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate payment processing
-    setTimeout(() => {
-      clearCart();
-      router.push("/checkout/success");
-    }, 2000);
+    setError(null);
+
+    try {
+      // Simulation of different outcomes based on email for testing
+      // np. 'fail@test.com' -> Brak środków
+      let status = "success";
+      let statusMessage = "Płatność zakończona sukcesem";
+
+      if (formData.email.includes("fail")) {
+        status = "failed";
+        statusMessage = "Brak środków na koncie";
+      } else if (formData.email.includes("error")) {
+        status = "error";
+        statusMessage = "Błąd komunikacji z bankiem";
+      }
+
+      // Save transaction to Firestore
+      const transactionData = {
+        customer: formData,
+        items: items.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image
+        })),
+        totalAmount: totalPrice,
+        status: status,
+        statusMessage: statusMessage,
+        createdAt: serverTimestamp(),
+        paymentMethod: "Karta / BLIK"
+      };
+
+      await addDoc(collection(db, "transactions"), transactionData);
+
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      if (status === "success") {
+        clearCart();
+        router.push("/checkout/success");
+      } else {
+        setError(statusMessage);
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      console.error("Error saving transaction:", err);
+      setError("Wystąpił błąd podczas przetwarzania transakcji. Spróbuj ponownie.");
+      setIsSubmitting(false);
+    }
   };
 
   if (!isReady) return null;
-  if (items.length === 0) {
+  if (items.length === 0 && !isSubmitting) {
     router.push("/cart");
     return null;
   }
@@ -53,6 +115,20 @@ export default function CheckoutPage() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-12"
           >
+            <AnimatePresence>
+              {error && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-red-500/10 border border-red-500/20 p-4 flex items-center gap-3 text-red-500 text-xs font-bold uppercase tracking-widest mb-8"
+                >
+                  <AlertCircle className="w-4 h-4" />
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <form onSubmit={handleSubmit} className="space-y-12">
                <div className="space-y-6">
                   <h2 className="text-xl font-serif font-bold text-white flex items-center gap-3 uppercase tracking-widest">
@@ -61,25 +137,61 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
                         <label className="text-[10px] font-bold text-muted uppercase tracking-widest">Imię i Nazwisko</label>
-                        <input required type="text" className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" />
+                        <input 
+                          required 
+                          type="text" 
+                          name="fullName"
+                          value={formData.fullName}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" 
+                        />
                      </div>
                      <div className="space-y-2">
                         <label className="text-[10px] font-bold text-muted uppercase tracking-widest">Email</label>
-                        <input required type="email" className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" />
+                        <input 
+                          required 
+                          type="email" 
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" 
+                        />
                      </div>
                   </div>
                   <div className="space-y-2">
                      <label className="text-[10px] font-bold text-muted uppercase tracking-widest">Adres</label>
-                     <input required type="text" className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" placeholder="Ulica, Numer domu/mieszkania" />
+                     <input 
+                        required 
+                        type="text" 
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" 
+                        placeholder="Ulica, Numer domu/mieszkania" 
+                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
                         <label className="text-[10px] font-bold text-muted uppercase tracking-widest">Kod Pocztowy</label>
-                        <input required type="text" className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" />
+                        <input 
+                          required 
+                          type="text" 
+                          name="zipCode"
+                          value={formData.zipCode}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" 
+                        />
                      </div>
                      <div className="space-y-2">
                         <label className="text-[10px] font-bold text-muted uppercase tracking-widest">Miasto</label>
-                        <input required type="text" className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" />
+                        <input 
+                          required 
+                          type="text" 
+                          name="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-950 border border-white/5 py-4 px-4 text-white focus:outline-none focus:border-accent transition-colors" 
+                        />
                      </div>
                   </div>
                </div>
@@ -107,7 +219,7 @@ export default function CheckoutPage() {
                <button 
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-accent text-black py-6 text-sm font-bold uppercase tracking-[0.3em] hover:bg-white transition-all flex items-center justify-center gap-4 shadow-2xl shadow-accent/20"
+                  className="w-full bg-accent text-black py-6 text-sm font-bold uppercase tracking-[0.3em] hover:bg-white transition-all flex items-center justify-center gap-4 shadow-2xl shadow-accent/20 disabled:opacity-50 disabled:cursor-not-allowed"
                >
                   {isSubmitting ? "Przetwarzanie..." : (<>Zapłać {totalPrice} PLN <ArrowRight className="w-5 h-5" /></>)}
                </button>
