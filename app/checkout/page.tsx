@@ -67,14 +67,14 @@ export default function CheckoutPage() {
         paymentMethod: "Karta / BLIK"
       };
 
-      await addDoc(collection(db, "transactions"), transactionData);
+      const docRef = await addDoc(collection(db, "transactions"), transactionData);
 
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       if (status === "success") {
         clearCart();
-        router.push("/checkout/success");
+        router.push(`/checkout/success?id=${docRef.id}`);
       } else {
         setError(statusMessage);
         setIsSubmitting(false);
