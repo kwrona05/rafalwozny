@@ -11,6 +11,7 @@ import { useCart } from "@/lib/cart-store";
 const navLinks = [
   { name: "Start", href: "/" },
   { name: "Portfolio", href: "/#portfolio" },
+  { name: "Wystawy i prelekcje", href: "/exhibitions" },
   { name: "Sklep", href: "/shop" },
   { name: "Kontakt", href: "/#contact" },
 ];

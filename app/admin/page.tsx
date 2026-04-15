@@ -11,7 +11,8 @@ import {
   Settings, 
   Users, 
   TrendingUp, 
-  ArrowUpRight 
+  ArrowUpRight,
+  Presentation
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -38,6 +39,7 @@ export default function AdminDashboard() {
     { label: "Zamówienia", value: "12", change: "+4 dzisiaj", icon: TrendingUp },
     { label: "Produkty", value: "3", change: "0 dzisiaj", icon: ShoppingBag },
     { label: "Blog / Portfolio", value: "3", change: "0 dzisiaj", icon: ImageIcon },
+    { label: "Wystawy", value: "0", change: "0 dzisiaj", icon: Presentation },
     { label: "Użytkownicy", value: "1", change: "0 dzisiaj", icon: Users },
   ];
 
@@ -77,7 +79,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            <Link href="/admin/products" className="group">
               <div className="bg-zinc-950 border border-white/5 p-12 relative overflow-hidden h-full">
                  <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -100,6 +102,19 @@ export default function AdminDashboard() {
                  <p className="text-muted text-sm font-light mb-8 max-w-sm">Publikuj nowe zdjęcia i twórz historie na mini-blogu fotograficznym.</p>
                  <span className="inline-flex items-center gap-2 text-[10px] text-accent font-bold uppercase tracking-[0.2em] group-hover:gap-4 transition-all">
                     Otwórz Portfolio CMS <ArrowUpRight className="w-4 h-4" />
+                 </span>
+              </div>
+           </Link>
+
+           <Link href="/admin/exhibitions" className="group">
+              <div className="bg-zinc-950 border border-white/5 p-12 relative overflow-hidden h-full">
+                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <Presentation className="w-32 h-32 text-white" />
+                 </div>
+                 <h2 className="text-3xl font-serif font-bold text-white mb-4">Wystawy i Prelekcje</h2>
+                 <p className="text-muted text-sm font-light mb-8 max-w-sm">Informuj o nadchodzących wystawach, spotkaniach i prelekcjach.</p>
+                 <span className="inline-flex items-center gap-2 text-[10px] text-accent font-bold uppercase tracking-[0.2em] group-hover:gap-4 transition-all">
+                    Otwórz CMS Wystaw <ArrowUpRight className="w-4 h-4" />
                  </span>
               </div>
            </Link>

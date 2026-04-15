@@ -17,6 +17,15 @@ export type PortfolioItem = {
   date: string;
 };
 
+export type Exhibition = {
+  id: string;
+  title: string;
+  description: string;
+  images: string[];
+  date: string;
+  place: string;
+};
+
 export type User = {
   id: string;
   email: string;
@@ -80,6 +89,8 @@ export const MOCK_PORTFOLIO: PortfolioItem[] = [
     date: "2023-11-10",
   },
 ];
+
+export const MOCK_EXHIBITIONS: Exhibition[] = [];
 
 export const MOCK_ADMIN: User = {
   id: "admin",
