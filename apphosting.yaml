@@ -1,0 +1,11 @@
+runtime: nodejs20
+
+environmentVariables:
+  - variable: IMOJE_MERCHANT_ID
+    value: "appeznhogtfq5ujdn8sc"
+  - variable: IMOJE_SERVICE_ID
+    value: "c473816a-da57-467d-94e6-480cd732f0ef"
+  - variable: IMOJE_SERVICE_KEY
+    value: "-9jICh38cRlKdZ79VRNycpLwkCbHymS28wO2"
+  - variable: IMOJE_AUTH_TOKEN
+    value: "g1ep3vyu2fp3ur1h4r9m5gosj4lg64q7fc47bsr52kihonyjjs3ozjjrza915bwb"

@@ -69,11 +69,14 @@ export default function CheckoutPage() {
     }
   };
 
+  React.useEffect(() => {
+    if (isReady && items.length === 0 && !isSubmitting) {
+      router.push("/cart");
+    }
+  }, [isReady, items.length, isSubmitting, router]);
+
   if (!isReady) return null;
-  if (items.length === 0 && !isSubmitting) {
-    router.push("/cart");
-    return null;
-  }
+  if (items.length === 0 && !isSubmitting) return null;
 
   return (
     <main className="min-h-screen bg-black pt-32 pb-24 px-6 font-sans antialiased text-foreground">

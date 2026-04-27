@@ -37,10 +37,12 @@ export default function LoginPage() {
         }
       } else {
         // Map common Firebase errors to Polish
-        let msg = result.error;
-        if (msg.includes("auth/invalid-credential")) msg = "Nieprawidłowy e-mail lub hasło.";
-        if (msg.includes("auth/user-not-found")) msg = "Użytkownik nie istnieje.";
-        if (msg.includes("auth/wrong-password")) msg = "Nieprawidłowe hasło.";
+        let msg = result.error || "Wystąpił nieznany błąd.";
+        if (typeof msg === "string") {
+          if (msg.includes("auth/invalid-credential")) msg = "Nieprawidłowy e-mail lub hasło.";
+          if (msg.includes("auth/user-not-found")) msg = "Użytkownik nie istnieje.";
+          if (msg.includes("auth/wrong-password")) msg = "Nieprawidłowe hasło.";
+        }
         setError(msg);
       }
     } catch (err) {

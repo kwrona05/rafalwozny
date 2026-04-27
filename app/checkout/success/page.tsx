@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { CheckCircle2, ShoppingBag, Home, Mail, FileText, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useCart } from "@/lib/cart-store";
 import { useSearchParams } from "next/navigation";
 import { db } from "@/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -89,7 +90,7 @@ function SuccessContent() {
       head: [["Produkt", "Ilość", "Cena jedn.", "Suma"]],
       body: tableData,
       theme: "striped",
-      headStyles: { fillStyle: "solid", fillColor: [30, 30, 30], textColor: [255, 255, 255] },
+      headStyles: { fillColor: [30, 30, 30], textColor: [255, 255, 255] },
       margin: { top: 95 },
     });
 

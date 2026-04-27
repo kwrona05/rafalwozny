@@ -4,10 +4,10 @@ import { db } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 // These should be set in .env.local
-const MERCHANT_ID = process.env.IMOJE_MERCHANT_ID || "v698mqz9v2nxvnmvny1r";
-const SERVICE_ID = process.env.IMOJE_SERVICE_ID || "l1scsyd48m8vstmvp6rr";
-const SERVICE_KEY = process.env.IMOJE_SERVICE_KEY || "YOUR_SHOP_KEY";
-const AUTH_TOKEN = process.env.IMOJE_AUTH_TOKEN || "YOUR_AUTH_TOKEN";
+const MERCHANT_ID = process.env.IMOJE_MERCHANT_ID;
+const SERVICE_ID = process.env.IMOJE_SERVICE_ID;
+const SERVICE_KEY = process.env.IMOJE_SERVICE_KEY;
+const AUTH_TOKEN = process.env.IMOJE_AUTH_TOKEN;
 const IS_SANDBOX = true;
 
 const API_BASE_URL = IS_SANDBOX 
@@ -16,13 +16,38 @@ const API_BASE_URL = IS_SANDBOX
 
 export async function POST(req: NextRequest) {
   try {
+    // Validate environment variables first
+    if (!MERCHANT_ID || !SERVICE_ID || !SERVICE_KEY || !AUTH_TOKEN) {
+      console.error("Missing imoje configuration:", { 
+        hasMerchantId: !!MERCHANT_ID, 
+        hasServiceId: !!SERVICE_ID, 
+        hasServiceKey: !!SERVICE_KEY, 
+        hasAuthToken: !!AUTH_TOKEN 
+      });
+      return NextResponse.json({ 
+        success: false, 
+        error: "Błąd konfiguracji serwera płatności" 
+      }, { status: 500 });
+    }
+
     const body = await req.json();
     const { items, totalPrice, customer, successUrl, failureUrl } = body;
 
     // 1. Create unique order ID
     const orderId = `RW-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-    // 2. Prepare imoje transaction body
+    // 2. Save pending transaction to Firestore (Moved up to get ID for success/failure URLs)
+    const transactionRef = await addDoc(collection(db, "transactions"), {
+      orderId,
+      customer,
+      items,
+      totalAmount: totalPrice,
+      status: "pending",
+      paymentMethod: "imoje",
+      createdAt: serverTimestamp(),
+    });
+
+    // 3. Prepare imoje transaction body
     const transactionBody = {
       serviceId: SERVICE_ID,
       amount: Math.round(totalPrice * 100), // imoje expects amount in grosze (cents)
@@ -41,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     const payload = JSON.stringify(transactionBody);
     
-    // 3. Generate Signature
+    // 4. Generate Signature
     // Format: signature=val;alg=sha256
     const signature = crypto
       .createHmac("sha256", SERVICE_KEY)
@@ -49,17 +74,6 @@ export async function POST(req: NextRequest) {
       .digest("hex");
 
     const signatureHeader = `signature=${signature};alg=sha256`;
-
-    // 4. Save pending transaction to Firestore
-    const transactionRef = await addDoc(collection(db, "transactions"), {
-      orderId,
-      customer,
-      items,
-      totalAmount: totalPrice,
-      status: "pending",
-      paymentMethod: "imoje",
-      createdAt: serverTimestamp(),
-    });
 
     // 5. Call imoje API to create transaction
     const response = await fetch(`${API_BASE_URL}/payment`, {

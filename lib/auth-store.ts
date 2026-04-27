@@ -1,132 +1,91 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { auth, db } from "@/firebase";
-import { 
-  onAuthStateChanged, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut,
-  User as FirebaseUser
-} from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { User as AppUser, MOCK_ADMIN } from "./mock-data";
+import { User as AppUser } from "./mock-data";
 
 export interface ExtendedUser extends AppUser {
   isVerified: boolean;
 }
 
+// Mock Password Configuration
+const MOCK_PASSWORD = "test1234";
+
 export const useAuth = () => {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Load user from localStorage on mount (Session Persistence)
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // Fetch additional user data from Firestore
-        const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setUser({
-            id: firebaseUser.uid,
-            email: firebaseUser.email || "",
-            name: userData.name || "",
-            role: userData.role || "user",
-            isVerified: userData.isVerified || false
-          });
-        } else {
-          // Fallback if doc doesn't exist yet (e.g. during registration flow)
-          setUser({
-            id: firebaseUser.uid,
-            email: firebaseUser.email || "",
-            name: firebaseUser.displayName || "",
-            role: "user",
-            isVerified: false
-          });
-        }
-      } else {
-        setUser(null);
+    const savedUser = localStorage.getItem("rw_mock_user");
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {
+        console.error("Failed to parse mock user", e);
+        localStorage.removeItem("rw_mock_user");
       }
-      setIsLoading(false);
-    });
-
-    return () => unsubscribe();
+    }
+    setIsLoading(false);
   }, []);
 
   const register = async (email: string, name: string, pass: string) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-      const firebaseUser = userCredential.user;
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-      // Assign admin role if it's the specific admin email
-      const role = email.toLowerCase() === "admin@rafalwozny.pl" ? "admin" : "user";
+    const role = email.toLowerCase() === "admin@rafalwozny.pl" ? "admin" : "user";
+    const newUser: ExtendedUser = {
+      id: `mock-${Date.now()}`,
+      email,
+      name,
+      role,
+      isVerified: true // Auto-verify for easy testing
+    };
 
-      // Create user profile in Firestore
-      await setDoc(doc(db, "users", firebaseUser.uid), {
-        name,
-        email,
-        role,
-        isVerified: false,
-        createdAt: serverTimestamp()
-      });
-
-      return { success: true, uid: firebaseUser.uid };
-    } catch (error: any) {
-      console.error("Registration Error:", error);
-      return { success: false, error: error.message };
-    }
+    setUser(newUser);
+    localStorage.setItem("rw_mock_user", JSON.stringify(newUser));
+    return { success: true, uid: newUser.id, error: undefined as string | undefined };
   };
 
   const login = async (email: string, pass: string) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-      
-      let isVerified = false;
-      if (userDoc.exists()) {
-        isVerified = userDoc.data().isVerified || false;
-      }
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-      return { success: true, isVerified, uid: userCredential.user.uid };
-    } catch (error: any) {
-      console.error("Login Error:", error);
-      return { success: false, error: error.message };
+    // Simple password check
+    if (pass !== MOCK_PASSWORD) {
+      return { 
+        success: false, 
+        error: `Nieprawidłowe hasło testowe. Użyj: ${MOCK_PASSWORD}` 
+      };
     }
+
+    const role = email.toLowerCase() === "admin@rafalwozny.pl" ? "admin" : "user";
+    const mockUser: ExtendedUser = {
+      id: `mock-${email.split('@')[0]}`,
+      email,
+      name: email === "admin@rafalwozny.pl" ? "Rafał Woźny (Admin)" : "Użytkownik Testowy",
+      role,
+      isVerified: true
+    };
+
+    setUser(mockUser);
+    localStorage.setItem("rw_mock_user", JSON.stringify(mockUser));
+    return { success: true, isVerified: true, uid: mockUser.id, error: undefined as string | undefined };
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Logout Error:", error);
-    }
+    setUser(null);
+    localStorage.removeItem("rw_mock_user");
+    return { success: true };
   };
 
   const verifyOTP = async (uid: string, code: string) => {
-    try {
-      const otpDoc = await getDoc(doc(db, "otps", uid));
-      if (otpDoc.exists() && otpDoc.data().code === code) {
-        // Check expiration (optional, set to 15 mins)
-        const createdAt = otpDoc.data().createdAt?.toDate();
-        if (createdAt && (new Date().getTime() - createdAt.getTime()) > 15 * 60 * 1000) {
-          return { success: false, error: "Kod wygasł." };
-        }
-
-        // Mark user as verified
-        await setDoc(doc(db, "users", uid), { isVerified: true }, { merge: true });
-        
-        // Refresh local user state if currently logged in
-        if (user && user.id === uid) {
-          setUser({ ...user, isVerified: true });
-        }
-        
-        return { success: true };
-      }
-      return { success: false, error: "Nieprawidłowy kod." };
-    } catch (error: any) {
-      console.error("Verification Error:", error);
-      return { success: false, error: error.message };
+    // Mock OTP always succeeds
+    if (user && user.id === uid) {
+      const updatedUser = { ...user, isVerified: true };
+      setUser(updatedUser);
+      localStorage.setItem("rw_mock_user", JSON.stringify(updatedUser));
     }
+    return { success: true, error: undefined as string | undefined };
   };
 
   return { 
@@ -140,3 +99,4 @@ export const useAuth = () => {
     isVerified: user?.isVerified
   };
 };
+

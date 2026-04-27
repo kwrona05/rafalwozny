@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl" className="scroll-smooth">
+    <html lang="pl" className="scroll-smooth" data-scroll-behavior="smooth">
       <body
         className={`${inter.variable} ${playfair.variable} antialiased bg-black`}
       >
