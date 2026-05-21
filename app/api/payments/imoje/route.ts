@@ -58,10 +58,8 @@ export async function POST(req: NextRequest) {
         lastName: customer.fullName.split(" ").slice(1).join(" ") || "Rafał Woźny",
         email: customer.email,
       },
-      urlSuccess: successUrl || `${req.nextUrl.origin}/checkout/success?id=${transactionRef.id}`,
-      urlFailure: failureUrl || `${req.nextUrl.origin}/checkout/failure?id=${transactionRef.id}`,
-      type: "sale",
-      method: "no_method" // This allows user to choose method on imoje page
+      successReturnUrl: successUrl || `${req.nextUrl.origin}/checkout/success?id=${transactionRef.id}`,
+      failureReturnUrl: failureUrl || `${req.nextUrl.origin}/checkout/failure?id=${transactionRef.id}`,
     };
 
     const payload = JSON.stringify(transactionBody);
@@ -89,7 +87,7 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Imoje API Error:", data);
+      console.error("Imoje API Error Details:", JSON.stringify(data, null, 2));
       return NextResponse.json({ 
         success: false, 
         error: "Błąd bramki płatniczej",
