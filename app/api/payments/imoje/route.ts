@@ -8,7 +8,7 @@ const MERCHANT_ID = process.env.IMOJE_MERCHANT_ID;
 const SERVICE_ID = process.env.IMOJE_SERVICE_ID;
 const SERVICE_KEY = process.env.IMOJE_SERVICE_KEY;
 const AUTH_TOKEN = process.env.IMOJE_AUTH_TOKEN;
-const IS_SANDBOX = true;
+const IS_SANDBOX = process.env.IMOJE_SANDBOX !== "false";
 
 const API_BASE_URL = IS_SANDBOX 
   ? `https://sandbox.api.imoje.pl/v1/merchant/${MERCHANT_ID}`
