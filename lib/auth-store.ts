@@ -7,8 +7,9 @@ export interface ExtendedUser extends AppUser {
   isVerified: boolean;
 }
 
-// Mock Password Configuration
-const MOCK_PASSWORD = "test1234";
+// Admin Configuration
+const ADMIN_LOGIN = "yop9ha_12345";
+const ADMIN_PASSWORD = "Zachwyconyswiatem!@2";
 
 export const useAuth = () => {
   const [user, setUser] = useState<ExtendedUser | null>(null);
@@ -28,48 +29,34 @@ export const useAuth = () => {
     setIsLoading(false);
   }, []);
 
-  const register = async (email: string, name: string, pass: string) => {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    const role = email.toLowerCase() === "admin@rafalwozny.pl" ? "admin" : "user";
-    const newUser: ExtendedUser = {
-      id: `mock-${Date.now()}`,
-      email,
-      name,
-      role,
-      isVerified: true // Auto-verify for easy testing
-    };
-
-    setUser(newUser);
-    localStorage.setItem("rw_mock_user", JSON.stringify(newUser));
-    return { success: true, uid: newUser.id, error: undefined as string | undefined };
+  const register = async (_email: string, _name: string, _pass: string) => {
+    // Registration is disabled for standard users
+    return { success: false, uid: "", error: "Rejestracja jest wyłączona." };
   };
 
-  const login = async (email: string, pass: string) => {
+  const login = async (loginVal: string, passVal: string) => {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    // Simple password check
-    if (pass !== MOCK_PASSWORD) {
-      return { 
-        success: false, 
-        error: `Nieprawidłowe hasło testowe. Użyj: ${MOCK_PASSWORD}` 
+    // Verify admin credentials
+    if (loginVal === ADMIN_LOGIN && passVal === ADMIN_PASSWORD) {
+      const adminUser: ExtendedUser = {
+        id: "admin-user-id",
+        email: "admin@rafalwozny.pl",
+        name: "Rafał Woźny (Admin)",
+        role: "admin",
+        isVerified: true
       };
+
+      setUser(adminUser);
+      localStorage.setItem("rw_mock_user", JSON.stringify(adminUser));
+      return { success: true, isVerified: true, uid: adminUser.id, error: undefined as string | undefined };
     }
 
-    const role = email.toLowerCase() === "admin@rafalwozny.pl" ? "admin" : "user";
-    const mockUser: ExtendedUser = {
-      id: `mock-${email.split('@')[0]}`,
-      email,
-      name: email === "admin@rafalwozny.pl" ? "Rafał Woźny (Admin)" : "Użytkownik Testowy",
-      role,
-      isVerified: true
+    return { 
+      success: false, 
+      error: "Nieprawidłowy login lub hasło." 
     };
-
-    setUser(mockUser);
-    localStorage.setItem("rw_mock_user", JSON.stringify(mockUser));
-    return { success: true, isVerified: true, uid: mockUser.id, error: undefined as string | undefined };
   };
 
   const logout = async () => {
@@ -78,7 +65,7 @@ export const useAuth = () => {
     return { success: true };
   };
 
-  const verifyOTP = async (uid: string, code: string) => {
+  const verifyOTP = async (uid: string, _code: string) => {
     // Mock OTP always succeeds
     if (user && user.id === uid) {
       const updatedUser = { ...user, isVerified: true };

@@ -68,7 +68,7 @@ export default function Navbar() {
               )}
             </Link>
 
-            {user ? (
+            {user && (
               <div className="flex items-center gap-4">
                 {isAdmin && (
                   <Link 
@@ -87,13 +87,6 @@ export default function Navbar() {
                   <LogOut className="w-5 h-5" />
                 </button>
               </div>
-            ) : (
-              <Link
-                href="/login"
-                className="px-5 py-2 bg-accent text-black text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors"
-              >
-                Logowanie
-              </Link>
             )}
           </div>
         </div>
@@ -137,7 +130,7 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
-              {user ? (
+              {user && (
                 <>
                   {isAdmin && (
                     <Link
@@ -155,14 +148,6 @@ export default function Navbar() {
                     Wyloguj
                   </button>
                 </>
-              ) : (
-                <Link
-                  href="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="px-8 py-3 bg-accent text-black text-sm font-bold uppercase tracking-widest"
-                >
-                  Logowanie
-                </Link>
               )}
             </div>
           </motion.div>
