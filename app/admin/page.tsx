@@ -8,14 +8,10 @@ import {
   LayoutDashboard, 
   ShoppingBag, 
   Image as ImageIcon, 
-  Settings, 
-  Users, 
-  TrendingUp, 
   ArrowUpRight,
   Presentation
 } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 export default function AdminDashboard() {
   const { user, isAdmin, isLoading } = useAuth();
@@ -35,14 +31,6 @@ export default function AdminDashboard() {
     );
   }
 
-  const stats = [
-    { label: "Zamówienia", value: "12", change: "+4 dzisiaj", icon: TrendingUp },
-    { label: "Produkty", value: "3", change: "0 dzisiaj", icon: ShoppingBag },
-    { label: "Blog / Portfolio", value: "3", change: "0 dzisiaj", icon: ImageIcon },
-    { label: "Wystawy", value: "0", change: "0 dzisiaj", icon: Presentation },
-    { label: "Użytkownicy", value: "1", change: "0 dzisiaj", icon: Users },
-  ];
-
   return (
     <main className="min-h-screen bg-[#050505] pt-32 pb-24 px-6 font-sans">
       <Navbar />
@@ -57,26 +45,6 @@ export default function AdminDashboard() {
             Witaj, <span className="text-accent">{user?.name}</span>
           </h1>
         </header>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {stats.map((stat, i) => (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              key={stat.label}
-              className="bg-zinc-950 border border-white/5 p-8 hover:border-accent/20 transition-all group"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <stat.icon className="w-6 h-6 text-accent/60 group-hover:text-accent transition-colors" />
-                <span className="text-[10px] text-green-500 font-bold uppercase tracking-widest">{stat.change}</span>
-              </div>
-              <div className="text-3xl font-serif font-bold text-white mb-1">{stat.value}</div>
-              <div className="text-xs text-muted uppercase font-bold tracking-widest">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
