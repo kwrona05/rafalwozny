@@ -39,7 +39,6 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     const storedProducts = localStorage.getItem("rw_products");
     const storedPortfolio = localStorage.getItem("rw_portfolio");
     const storedExhibitions = localStorage.getItem("rw_exhibitions");
-    const storedCart = localStorage.getItem("rw_cart");
 
     if (storedProducts) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -68,10 +67,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("rw_exhibitions", JSON.stringify(MOCK_EXHIBITIONS));
     }
 
-    if (storedCart) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCartItems(JSON.parse(storedCart));
-    }
+    localStorage.removeItem("rw_cart");
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsReady(true);

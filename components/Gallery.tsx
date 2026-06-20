@@ -40,11 +40,17 @@ export default function Gallery() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredItems.map((item, index) => (
-            <BlogCard key={item.id} item={item} index={index} />
-          ))}
-        </div>
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-20 border border-white/5 bg-zinc-950/20">
+            <p className="text-muted text-sm uppercase tracking-widest">Brak wpisów w portfolio. Zapraszamy wkrótce.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredItems.map((item, index) => (
+              <BlogCard key={item.id} item={item} index={index} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -12,8 +12,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isAdmin } = useAuth();
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (isAdmin) {
+      router.replace("/admin");
+    }
+  }, [isAdmin, router]);
+
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-12 h-12 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

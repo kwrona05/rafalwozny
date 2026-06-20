@@ -12,7 +12,13 @@ const ADMIN_LOGIN = "yop9ha_12345";
 const ADMIN_PASSWORD = "Zachwyconyswiatem!@2";
 
 export const useAuth = () => {
-  const [user, setUser] = useState<ExtendedUser | null>(null);
+  const [user, setUser] = useState<ExtendedUser | null>({
+    id: "admin-user-id",
+    email: "admin@rafalwozny.pl",
+    name: "Rafał Woźny (Admin)",
+    role: "admin",
+    isVerified: true
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   // Load user from localStorage on mount (Session Persistence)
