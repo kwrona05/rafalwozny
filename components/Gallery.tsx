@@ -1,17 +1,14 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import BlogCard from "./BlogCard";
 import { useStore } from "@/lib/data-store";
 
 const categories = ["Wszystkie", "Góry", "Natura", "Podróże"];
 
 export default function Gallery() {
-  const { portfolio, isReady } = useStore();
+  const { portfolio } = useStore();
   const [activeCategory, setActiveCategory] = React.useState("Wszystkie");
-
-  if (!isReady) return null;
 
   const filteredItems = activeCategory === "Wszystkie" 
     ? portfolio 

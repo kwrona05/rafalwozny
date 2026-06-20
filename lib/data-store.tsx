@@ -28,9 +28,9 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
-  const [exhibitions, setExhibitions] = useState<Exhibition[]>([]);
+  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>(MOCK_PORTFOLIO);
+  const [exhibitions, setExhibitions] = useState<Exhibition[]>(MOCK_EXHIBITIONS);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isReady, setIsReady] = useState(false);
 

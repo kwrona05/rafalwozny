@@ -9,14 +9,12 @@ import { Filter, ShoppingBag } from "lucide-react";
 const categories = ["Wszystkie", "Prints", "Presets", "Workshops"];
 
 export default function ShopPage() {
-  const { products, isReady } = useStore();
+  const { products } = useStore();
   const [activeCategory, setActiveCategory] = useState("Wszystkie");
 
   const filteredProducts = activeCategory === "Wszystkie"
     ? products
     : products.filter(p => p.category === activeCategory);
-
-  if (!isReady) return null;
 
   return (
     <main className="min-h-screen bg-black pt-32 pb-24 px-6 font-sans antialiased text-foreground">

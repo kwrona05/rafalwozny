@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
 import { useStore } from "@/lib/data-store";
+import { MOCK_PRODUCTS } from "@/lib/mock-data";
 import { useCart } from "@/lib/cart-store";
 import { ArrowLeft, ShoppingCart, ShieldCheck, Truck, RefreshCcw, Check } from "lucide-react";
 import { motion } from "framer-motion";
@@ -15,7 +16,7 @@ export default function ProductDetailView({ id }: { id: string }) {
   const { addItem } = useCart();
   const [adding, setAdding] = useState(false);
 
-  const product = products.find((p) => p.id === id);
+  const product = (isReady ? products : MOCK_PRODUCTS).find((p) => p.id === id);
 
   const handleAddToCart = () => {
     if (product) {
@@ -24,12 +25,6 @@ export default function ProductDetailView({ id }: { id: string }) {
       setTimeout(() => setAdding(false), 1000);
     }
   };
-
-  if (!isReady) return (
-    <div className="min-h-screen bg-black flex items-center justify-center text-white">
-      Ładowanie...
-    </div>
-  );
 
   if (!product) {
     return (

@@ -5,14 +5,14 @@ import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
 import { useStore } from "@/lib/data-store";
+import { MOCK_PORTFOLIO } from "@/lib/mock-data";
 import { ArrowLeft, Calendar, Share2, Camera } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function PortfolioDetailView({ id }: { id: string }) {
   const { portfolio, isReady } = useStore();
-  const item = portfolio.find((p) => p.id === id);
+  const item = (isReady ? portfolio : MOCK_PORTFOLIO).find((p) => p.id === id);
 
-  if (!isReady) return null;
   if (!item) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-white">

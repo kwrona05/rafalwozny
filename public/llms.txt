@@ -1,0 +1,17 @@
+# Rafał Woźny Photography
+
+Autorskie portfolio fotograficzne i sklep internetowy Rafała Woźnego, prezentujący fotografię krajobrazową z Beskidów, Tatr i Karkonoszy.
+
+## Informacje ogólne
+- **Autor**: Rafał Woźny
+- **Domena**: https://rafalwozny.pl
+- **Kontakt**: rafal.wozny@poczta.onet.pl, +48 504 277 856
+
+## Sekcje strony
+- **Strona główna**: https://rafalwozny.pl/ - Prezentacja galerii prac, informacje o autorze i bio oraz kontakt.
+- **Sklep**: https://rafalwozny.pl/shop - Sklep autorski z możliwością zamawiania:
+  - Wydruków kolekcjonerskich na papierach archiwalnych (np. Tatry Wysokie)
+  - Paczek presetów Lightroom do obróbki zdjęć górskich (Golden Hour Presets Pack)
+  - Warsztatów fotografii krajobrazowej (np. w Karkonoszach)
+- **Wystawy i Prelekcje**: https://rafalwozny.pl/exhibitions - Informacje o nadchodzących i minionych wystawach, prelekcjach oraz spotkaniach autorskich na żywo.
+- **Portfolio**: https://rafalwozny.pl/#portfolio - Opowiadania i historie fotograficzne z wypraw w góry i na łono natury.

@@ -14,11 +14,15 @@ import {
   Trash2, 
   ExternalLink,
   X,
-  Save
+  Save,
+  Upload,
+  Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { storage } from "@/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function AdminProductsPage() {
   const { isAdmin, isLoading: authLoading } = useAuth();
@@ -28,6 +32,29 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    setIsUploading(true);
+    const file = e.target.files[0];
+
+    try {
+      const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      setFormData(prev => ({
+        ...prev,
+        image: url
+      }));
+    } catch (error) {
+      console.error("Upload failed", error);
+      alert("Błąd podczas przesyłania pliku.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Form State
   const [formData, setFormData] = useState<Omit<Product, "id">>({
@@ -72,7 +99,7 @@ export default function AdminProductsPage() {
         name: "",
         price: 0,
         category: "Prints",
-        image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80",
+        image: "",
         description: ""
       });
     }
@@ -263,14 +290,37 @@ export default function AdminProductsPage() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-accent uppercase tracking-widest">URL Zdjęcia</label>
-                    <input 
-                      required
-                      type="text"
-                      value={formData.image}
-                      onChange={(e) => setFormData({...formData, image: e.target.value})}
-                      className="w-full bg-black/40 border border-white/10 py-5 px-4 text-white focus:outline-none focus:border-accent transition-all font-light"
-                    />
+                    <label className="text-[10px] font-bold text-accent uppercase tracking-widest block">Zdjęcie Produktu</label>
+                    {formData.image ? (
+                      <div className="relative aspect-video max-w-sm group bg-black border border-white/5">
+                        <Image src={formData.image} alt="Uploaded product image" fill className="object-cover" />
+                        <button 
+                          type="button"
+                          onClick={() => setFormData({...formData, image: ""})}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="w-full max-w-sm aspect-video border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-accent/40 transition-colors bg-white/5">
+                        {isUploading ? (
+                          <Loader2 className="w-6 h-6 text-accent animate-spin" />
+                        ) : (
+                          <>
+                            <Upload className="w-6 h-6 text-muted" />
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-muted">Dodaj plik z komputera</span>
+                          </>
+                        )}
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={handleFileUpload} 
+                          disabled={isUploading}
+                          className="hidden" 
+                        />
+                      </label>
+                    )}
                   </div>
                 </div>
 
@@ -287,9 +337,14 @@ export default function AdminProductsPage() {
 
                 <button 
                   type="submit"
-                  className="w-full bg-accent text-black py-6 text-sm font-bold uppercase tracking-[0.2em] hover:bg-white transition-all flex items-center justify-center gap-3 shadow-xl shadow-accent/10"
+                  disabled={isUploading || !formData.image}
+                  className="w-full bg-accent text-black py-6 text-sm font-bold uppercase tracking-[0.2em] hover:bg-white transition-all flex items-center justify-center gap-3 shadow-xl shadow-accent/10 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Save className="w-5 h-5" /> {editingProduct ? "Zapisz Zmiany" : "Utwórz Produkt"}
+                  {isUploading ? (
+                    <>Przesyłanie... <Loader2 className="w-5 h-5 animate-spin" /></>
+                  ) : (
+                    <><Save className="w-5 h-5" /> {editingProduct ? "Zapisz Zmiany" : "Utwórz Produkt"}</>
+                  )}
                 </button>
               </form>
             </motion.div>

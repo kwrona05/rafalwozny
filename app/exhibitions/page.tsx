@@ -6,18 +6,9 @@ import { useStore } from "@/lib/data-store";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, ArrowRight, Presentation } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 export default function ExhibitionsPage() {
-  const { exhibitions, isReady } = useStore();
-
-  if (!isReady) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-12 h-12 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  const { exhibitions } = useStore();
 
   return (
     <main className="min-h-screen bg-[#050505] pt-32 pb-24 px-6 font-sans">
