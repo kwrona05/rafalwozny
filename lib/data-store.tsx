@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { MOCK_PRODUCTS, MOCK_PORTFOLIO, MOCK_EXHIBITIONS, Product, PortfolioItem, Exhibition } from "./mock-data";
+import { MOCK_PRODUCTS, MOCK_PORTFOLIO, MOCK_EXHIBITIONS, Product, PortfolioItem, Exhibition, SiteSettings, DEFAULT_SETTINGS } from "./mock-data";
 
 export type CartItem = Product & {
   quantity: number;
@@ -12,10 +12,12 @@ interface StoreContextType {
   portfolio: PortfolioItem[];
   exhibitions: Exhibition[];
   cartItems: CartItem[];
+  settings: SiteSettings;
   isReady: boolean;
   saveProducts: (newProducts: Product[]) => void;
   savePortfolio: (newPortfolio: PortfolioItem[]) => void;
   saveExhibitions: (newExhibitions: Exhibition[]) => void;
+  saveSettings: (newSettings: SiteSettings) => void;
   // Cart Actions
   addItem: (product: Product) => void;
   removeItem: (id: string) => void;
@@ -32,6 +34,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>(MOCK_PORTFOLIO);
   const [exhibitions, setExhibitions] = useState<Exhibition[]>(MOCK_EXHIBITIONS);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -39,6 +42,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     const storedProducts = localStorage.getItem("rw_products");
     const storedPortfolio = localStorage.getItem("rw_portfolio");
     const storedExhibitions = localStorage.getItem("rw_exhibitions");
+    const storedSettings = localStorage.getItem("rw_settings");
 
     if (storedProducts) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -67,6 +71,15 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("rw_exhibitions", JSON.stringify(MOCK_EXHIBITIONS));
     }
 
+    if (storedSettings) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSettings(JSON.parse(storedSettings));
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSettings(DEFAULT_SETTINGS);
+      localStorage.setItem("rw_settings", JSON.stringify(DEFAULT_SETTINGS));
+    }
+
     localStorage.removeItem("rw_cart");
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -86,6 +99,11 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const saveExhibitions = (newExhibitions: Exhibition[]) => {
     setExhibitions(newExhibitions);
     localStorage.setItem("rw_exhibitions", JSON.stringify(newExhibitions));
+  };
+
+  const saveSettings = (newSettings: SiteSettings) => {
+    setSettings(newSettings);
+    localStorage.setItem("rw_settings", JSON.stringify(newSettings));
   };
 
   const saveCart = (newItems: CartItem[]) => {
@@ -126,10 +144,12 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       portfolio,
       exhibitions,
       cartItems,
+      settings,
       isReady,
       saveProducts,
       savePortfolio,
       saveExhibitions,
+      saveSettings,
       addItem,
       removeItem,
       updateQuantity,

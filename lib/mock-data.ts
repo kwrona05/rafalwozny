@@ -46,3 +46,23 @@ export const MOCK_ADMIN: User = {
   role: "admin",
   name: "Rafał Woźny",
 };
+
+export type SiteSettings = {
+  siteName: string;
+  siteLogo: string;
+  contactPhone: string;
+  contactEmail: string;
+  aboutTitle: string;
+  aboutText: string;
+  aboutImage: string;
+};
+
+export const DEFAULT_SETTINGS: SiteSettings = {
+  siteName: "Rafał Woźny",
+  siteLogo: "",
+  contactPhone: "",
+  contactEmail: "",
+  aboutTitle: "",
+  aboutText: "",
+  aboutImage: "",
+};

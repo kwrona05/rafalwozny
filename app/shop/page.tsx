@@ -9,7 +9,7 @@ import { Filter, ShoppingBag } from "lucide-react";
 const categories = ["Wszystkie", "Prints", "Presets", "Workshops"];
 
 export default function ShopPage() {
-  const { products } = useStore();
+  const { products, settings } = useStore();
   const [activeCategory, setActiveCategory] = useState("Wszystkie");
 
   const filteredProducts = activeCategory === "Wszystkie"
@@ -68,7 +68,7 @@ export default function ShopPage() {
       
       {/* Footer simple */}
       <footer className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-muted">
-        <span className="text-sm tracking-widest uppercase font-bold">© 2026 RAFAŁ WOŹNY PHOTOGRAPHY</span>
+        <span className="text-sm tracking-widest uppercase font-bold">© 2026 {(settings?.siteName || "RAFAŁ WOŹNY").toUpperCase()} PHOTOGRAPHY</span>
         <div className="flex gap-8 uppercase text-xs tracking-widest font-bold">
           <a href="#" className="hover:text-white transition-colors">Instagram</a>
           <a href="#" className="hover:text-white transition-colors">Facebook</a>

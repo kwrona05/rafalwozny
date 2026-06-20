@@ -8,7 +8,7 @@ import { Calendar, MapPin, ArrowRight, Presentation } from "lucide-react";
 import Image from "next/image";
 
 export default function ExhibitionsPage() {
-  const { exhibitions } = useStore();
+  const { exhibitions, settings } = useStore();
 
   return (
     <main className="min-h-screen bg-[#050505] pt-32 pb-24 px-6 font-sans">
@@ -131,7 +131,7 @@ export default function ExhibitionsPage() {
       {/* Footer Decoration */}
       <footer className="mt-48 text-center py-20 border-t border-white/5">
         <div className="text-[10px] text-zinc-600 uppercase tracking-[1em] font-bold">
-          © Rafał Woźny Portfolio 2024
+          © {(settings?.siteName || "Rafał Woźny")} Portfolio 2026
         </div>
       </footer>
     </main>

@@ -9,7 +9,8 @@ import {
   ShoppingBag, 
   Image as ImageIcon, 
   ArrowUpRight,
-  Presentation
+  Presentation,
+  Settings
 } from "lucide-react";
 import Link from "next/link";
 
@@ -47,7 +48,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
            <Link href="/admin/products" className="group">
               <div className="bg-zinc-950 border border-white/5 p-12 relative overflow-hidden h-full">
                  <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -83,6 +84,19 @@ export default function AdminDashboard() {
                  <p className="text-muted text-sm font-light mb-8 max-w-sm">Informuj o nadchodzących wystawach, spotkaniach i prelekcjach.</p>
                  <span className="inline-flex items-center gap-2 text-[10px] text-accent font-bold uppercase tracking-[0.2em] group-hover:gap-4 transition-all">
                     Otwórz CMS Wystaw <ArrowUpRight className="w-4 h-4" />
+                 </span>
+              </div>
+           </Link>
+
+           <Link href="/admin/settings" className="group">
+              <div className="bg-zinc-950 border border-white/5 p-12 relative overflow-hidden h-full">
+                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <Settings className="w-32 h-32 text-white" />
+                 </div>
+                 <h2 className="text-3xl font-serif font-bold text-white mb-4">Ustawienia Strony</h2>
+                 <p className="text-muted text-sm font-light mb-8 max-w-sm">Zmieniaj nazwę strony, przesyłaj logo, edytuj dane kontaktowe i sekcję O mnie.</p>
+                 <span className="inline-flex items-center gap-2 text-[10px] text-accent font-bold uppercase tracking-[0.2em] group-hover:gap-4 transition-all">
+                    Otwórz Ustawienia <ArrowUpRight className="w-4 h-4" />
                  </span>
               </div>
            </Link>

@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Camera, LogOut, LayoutDashboard, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-store";
 import { useCart } from "@/lib/cart-store";
+import { useStore } from "@/lib/data-store";
 
 const navLinks = [
   { name: "Start", href: "/" },
@@ -21,6 +23,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const { user, logout, isAdmin } = useAuth();
   const { totalItems, isReady } = useCart();
+  const { settings } = useStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,9 +42,15 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
-          <Camera className="w-8 h-8 text-accent group-hover:scale-110 transition-transform" />
+          {settings?.siteLogo ? (
+            <div className="w-8 h-8 relative overflow-hidden rounded-full border border-accent/20">
+              <Image src={settings.siteLogo} alt={settings.siteName} fill className="object-cover" />
+            </div>
+          ) : (
+            <Camera className="w-8 h-8 text-accent group-hover:scale-110 transition-transform" />
+          )}
           <span className="text-xl font-serif font-bold tracking-tight text-white uppercase text-wrap">
-            Rafał Woźny
+            {settings?.siteName || "Rafał Woźny"}
           </span>
         </Link>
 
